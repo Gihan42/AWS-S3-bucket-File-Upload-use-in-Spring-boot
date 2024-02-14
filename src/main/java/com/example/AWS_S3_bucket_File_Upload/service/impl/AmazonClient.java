@@ -1,4 +1,4 @@
-package com.example.AWS_S3_bucket_File_Upload.service;
+package com.example.AWS_S3_bucket_File_Upload.service.impl;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -18,35 +18,46 @@ import java.io.IOException;
 import java.util.Date;
 
 @Service
-public class AmazonClient {
+public class AmazonClient implements AmazanService{
 
 
     private AmazonS3 amazonS3;
-    private String endpointUrl="https://s3.us-east-2.amazonaws.com";
-    private String accessKey="your s3 accesskey ";
-    private String secretKey="your s3 secretKey";
-    private String bucketName="your s3 bucketName";
+
+    @Value("${application.endpointUrl}")
+    private String endpointUrl;
+
+    @Value("${application.accessKey}")
+    private String accessKey;
+
+    @Value("${application.secretKey}")
+    private String secretKey;
+
+    @Value("${application.bucketName}")
+    private String bucketName;
 
     @PostConstruct
     private void initializeAmazon() {
         AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
         this.amazonS3 = new AmazonS3Client(credentials);
     }
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+    @Override
+    public File convertMultiPartToFile(MultipartFile file) throws IOException {
         File convFile = new File(file.getOriginalFilename());
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();
         return convFile;
     }
-    private String generateFileName(MultipartFile multiPart) {
+    @Override
+    public String generateFileName(MultipartFile multiPart) {
         return new Date().getTime() + "-" + multiPart.getOriginalFilename().replace(" ", "_");
     }
-    private void uploadFileTos3bucket(String fileName, File file) {
+    @Override
+    public void uploadFileTos3bucket(String fileName, File file) {
         amazonS3.putObject(new PutObjectRequest(bucketName, fileName, file)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
     }
-
+    @Override
     public String uploadFile(MultipartFile multipartFile) {
         String fileUrl = "";
         try {

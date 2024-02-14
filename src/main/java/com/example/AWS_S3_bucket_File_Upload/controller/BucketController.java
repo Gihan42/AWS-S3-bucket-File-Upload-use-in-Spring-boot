@@ -1,6 +1,6 @@
 package com.example.AWS_S3_bucket_File_Upload.controller;
 
-import com.example.AWS_S3_bucket_File_Upload.service.AmazonClient;
+import com.example.AWS_S3_bucket_File_Upload.service.impl.AmazonClient;
 import com.example.AWS_S3_bucket_File_Upload.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
